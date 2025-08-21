@@ -1,3 +1,10 @@
-<div class="container mt-5">
-  <h2>Profile Page</h2>
+<div *ngIf="user.valid">
+  <h2>Edit Profile</h2>
+  <form>
+    <label>Username: <input [(ngModel)]="user.username" name="username"></label><br>
+    <label>Birthdate: <input [(ngModel)]="user.birthdate" type="date" name="birthdate"></label><br>
+    <label>Age: <input [(ngModel)]="user.age" type="number" name="age"></label><br>
+    <label>Email: <input [(ngModel)]="user.email" name="email"></label><br>
+    <button (click)="onSave()">Save</button>
+  </form>
 </div>

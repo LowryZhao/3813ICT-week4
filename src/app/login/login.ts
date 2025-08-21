@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router'
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -15,23 +16,24 @@ export class LoginComponent {
   password: string = '';
   errorMessage: string = '';
 
-  users = [
-    { email: '123@qq.com', password: '123'},
-    { email: '456@qq.com', password: '456'},
-    { email: '789@qq.com', password: '789'}
-  ];
+  constructor(private http: HttpClient, private router: Router) {}
 
   login() {
-    console.log('Email input:', this.email, 'Password input:', this.password);
-    const matchedUser = this.users.find(user => user.email === this.email && user.password === this.password);
-    console.log('Matched User:', matchedUser);
-    if (matchedUser) {
-      this.errorMessage = '';
-      this.router.navigate(['/profile']);
-    } else {
-      this.errorMessage = 'Error Email or Password!';
-    }
+    this.http.post('http://localhost:3001/api/auth', { email: this.email, password: this.password }).subscribe(
+      (response: any) => {
+        console.log('API response:', response);
+        if (response.valid) {
+          localStorage.setItem('currentUser', JSON.stringify(response));
+          this.errorMessage = '';
+          this.router.navigate(['/profile']);
+        } else {
+          this.errorMessage = response.message || 'Error Email or Password!';
+        }
+      },
+      (error) => {
+        this.errorMessage = 'Server error, please try again';
+        console.error(error);
+      }
+    );  
   }
-
-  constructor(private router: Router) {}
 }
